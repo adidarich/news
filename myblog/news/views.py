@@ -5,12 +5,18 @@ from django.views.generic import ListView
 from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
 from django.views.decorators.http import require_POST
+from taggit.models import Tag
+from django.db.models import Count
 
 
-def post_list(request):
+def post_list(request, tag_slug=None):
     post_list = Post.published.all()
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        post_list = post_list.filter(tags__in=[tag])  # операция __in поиска по полю
     paginator = Paginator(post_list,
-                          3)  # создаем экземпляр класса Paginator с числом объектов, возвращаемых в расчете на страницу
+                          2)  # создаем экземпляр класса Paginator с числом объектов, возвращаемых в расчете на страницу
     page_number = request.GET.get('page', 1)
     try:
         posts = paginator.page(page_number)
@@ -20,7 +26,7 @@ def post_list(request):
     except EmptyPage:
         # Если page_number находится вне диапазона, то выдать последнюю страницу
         posts = paginator.page(paginator.num_pages)
-    return render(request, 'news/post/list.html', {'posts': posts})
+    return render(request, 'news/post/list.html', {'posts': posts, 'tag': tag})
 
 
 def post_detail(request, year, month, day, post):  # детальная информация о посте
@@ -35,7 +41,15 @@ def post_detail(request, year, month, day, post):  # детальная инфо
     # Форма для комментирования пользователями
     form = CommentForm()
 
-    return render(request, 'news/post/detail.html', {'post': post, 'comments': comments, 'form': form})
+    # Список схожих постов
+    post_tags_ids = post.tags.values_list('id', flat=True)
+    similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
+    similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
+
+    return render(request, 'news/post/detail.html', {'post': post,
+                                                     'comments': comments,
+                                                     'form': form,
+                                                     'similar_posts': similar_posts})
 
 
 # class PostListView(ListView):
@@ -84,4 +98,3 @@ def post_comment(request, post_id):
         # Сохранить комментарий в базе данных
         comment.save()
     return render(request, 'news/post/comment.html', {'post': post, 'form': form, 'comment': comment})
-
