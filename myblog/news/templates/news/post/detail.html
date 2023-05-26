@@ -33,7 +33,7 @@
             <h2>{{ post.title }}: <em>by {{ post.author }}</em></h2>
               <p><em>{{ post.body|linebreaks }}</em></p>
                 <p class="date">Published {{ post.publish }}</p>
-                  <div class="primary-button">
+                  <div class="btn btn-info">
                     <a href="{% url 'news:post_share' post.id %}">Share this post</a>
                   </div>
         </div>

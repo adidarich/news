@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 def post_list(request):
     post_list = Post.published.all()
     paginator = Paginator(post_list,
-                          2)  # создаем экземпляр класса Paginator с числом объектов, возвращаемых в расчете на страницу
+                          3)  # создаем экземпляр класса Paginator с числом объектов, возвращаемых в расчете на страницу
     page_number = request.GET.get('page', 1)
     try:
         posts = paginator.page(page_number)
