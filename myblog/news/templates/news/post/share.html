@@ -1,0 +1,41 @@
+{% extends "news/base.html" %}
+
+{% block title %}Share a post{% endblock %}
+
+{% block content %}
+<div class="fc-tab-4">
+<div class="contact-container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="contact-form">
+          <div class="heading">
+            <h2>Share a post</h2>
+          </div>
+            <fieldset>
+            {% if sent %}
+             <h1>E-mail successfully sent</h1>
+               <p>
+                "{{ post.title }}" was successfully sent to {{ form.cleaned_data.to }}.
+               </p>
+            </fieldset>
+            <fieldset>
+            {% else %}
+             <form method="post">
+              {{ form.as_p }}
+              {% csrf_token %}
+                <button type="submit" id="form-submit" class="btn">Send e-mail</button>
+             </form>
+             {% endif %}
+            </fieldset>
+        </div>
+      </div>
+         <div class="col-md-6">
+            <div class="more-info">
+                <h1>Share <em>"{{ post.title }}"</em> by e-mail</h1>
+                <p><em>{{ post.body }}</em></p>
+            </div>
+          </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

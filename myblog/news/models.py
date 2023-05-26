@@ -48,3 +48,7 @@ class Post(models.Model):
                                                  self.publish.month,
                                                  self.publish.day,
                                                  self.slug])
+
+
+class Comment(models.Model):
+    pass
