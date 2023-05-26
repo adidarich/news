@@ -3,21 +3,42 @@
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
-<div class="fc-tab-1">
-  <div class="home-container">
+ <div class="fc-tab-4">
+  <div class="contact-container">
     <div class="row">
       <div class="col-md-6">
-        <div class="left-content">
-          <div class="left-line"></div>
+        <div class="contact-form">
+          <div class="heading">
+            <h2>Add a new comment</h2>
+          </div>
+          <fieldset>
+             {% with comments.count as total_comments %}
+                <h2> {{ total_comments }} comment{{ total_comments|pluralize }}</h2>
+             {% endwith %}
+               {% for comment in comments %}
+                <div class="comment">
+                  <p class="info">
+                    Comment {{ forloop.counter }} by {{ comment.name }}
+                    {{ comment.created }}
+                  </p>
+                  {{ comment.body|linebreaks }}
+                </div>
+               {% endfor %}
+               {% include "news/post/includes/comment_form.html" %}
+          </fieldset>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="more-info">
             <h2>{{ post.title }}: <em>by {{ post.author }}</em></h2>
               <p><em>{{ post.body|linebreaks }}</em></p>
                 <p class="date">Published {{ post.publish }}</p>
                   <div class="primary-button">
                     <a href="{% url 'news:post_share' post.id %}">Share this post</a>
-                 </div>
-          </div>
+                  </div>
         </div>
       </div>
     </div>
+  </div>
 </div>
 {% endblock %}
